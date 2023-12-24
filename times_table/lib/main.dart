@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:times_table/activities.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -11,12 +12,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Student Reading Timetable'),
-        backgroundColor: Colors.blueAccent,
+    return MaterialApp(
+      title: "TB",
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Student Reading Timetable'),
+          backgroundColor: Colors.blueAccent,
+        ),
+        body: const ScheduleForm(),
       ),
-      body: const ScheduleForm(),
     );
   }
 }
@@ -35,90 +40,72 @@ class _ScheduleFormState extends State<ScheduleForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Day of the week',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a day';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _schedules.add({'day': value});
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Time slot',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a time slot';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _schedules[_schedules.length - 1]['time'] = value;
-                      });
-                    }
-                  },
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Day of the week',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a day';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                if (value != null) {
+                  setState(() {
+                    _schedules.add({'day': value});
+                  });
+                }
+              },
             ),
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blueAccent,
-            foregroundColor: Colors.white,
-          ),
-          child: const Text('Submit'),
-        ),
-        Expanded(
-          child: DataTable(
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Text('Day'),
+            const SizedBox(height: 16.0),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Time slot',
+                border: OutlineInputBorder(),
               ),
-              DataColumn(
-                label: Text('Time Slot'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a time slot';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                if (value != null) {
+                  setState(() {
+                    _schedules[_schedules.length - 1]['time'] = value;
+                  });
+                }
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ActivityForm(schedules: _schedules)),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                foregroundColor: Colors.white,
               ),
-            ],
-            rows: _schedules.map((schedule) {
-              return DataRow(
-                cells: <DataCell>[
-                  DataCell(Text(schedule['day'] ?? '')),
-                  DataCell(Text(schedule['time'] ?? '')),
-                ],
-              );
-            }).toList(),
-          ),
+              child: const Text('Next'),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
